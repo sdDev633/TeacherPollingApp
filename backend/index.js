@@ -8,8 +8,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve React frontend in production
-const frontendPath = path.join(__dirname, "frontend", "build");
+// ----------------------
+// Serve React frontend (Vite)
+// ----------------------
+const frontendPath = path.join(__dirname, "frontend", "dist"); // Vite default output
 app.use(express.static(frontendPath));
 
 // --------- LIVE MEMORY DATA ---------
@@ -17,7 +19,7 @@ let currentPoll = null;
 let students = {}; // socketId -> { name }
 let pastPolls = [];
 
-// --------- SOCKET CONNECTION --------
+// --------- SOCKET CONNECTION ---------
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: { origin: "*" },
@@ -31,9 +33,7 @@ io.on("connection", (socket) => {
         const name = payload.name?.trim();
         if (!name) return cb({ error: "Name required" });
 
-        const duplicate = Object.values(students).some(
-            (s) => s.name === name
-        );
+        const duplicate = Object.values(students).some((s) => s.name === name);
         if (duplicate) return cb({ error: "Name already taken" });
 
         students[socket.id] = { name };
@@ -79,14 +79,11 @@ io.on("connection", (socket) => {
         if (!student) return cb({ error: "You were removed" });
 
         const name = student.name;
-        if (currentPoll.answers[name])
-            return cb({ error: "Already answered" });
+        if (currentPoll.answers[name]) return cb({ error: "Already answered" });
 
         currentPoll.answers[name] = payload.choiceId;
 
-        const opt = currentPoll.options.find(
-            (o) => o.id === payload.choiceId
-        );
+        const opt = currentPoll.options.find((o) => o.id === payload.choiceId);
         if (opt) opt.count++;
 
         io.emit("poll:results", { poll: currentPoll });
@@ -128,13 +125,11 @@ io.on("connection", (socket) => {
 // ✅ HEALTH CHECK
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 
-// Serve React app for any other route
+// Catch-all to serve frontend for React router
 app.get("*", (req, res) => {
     res.sendFile(path.join(frontendPath, "index.html"));
 });
 
-// Use dynamic port for deployment platforms like Render, Heroku, Vercel
-const PORT = process.env.PORT || 4000;
-server.listen(PORT, () =>
-    console.log(`✅ Server running on port ${PORT}`)
-);
+// Use dynamic port for deployment platforms like Render, Heroku
+const PORT = process.env.PORT || 10000;
+server.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
