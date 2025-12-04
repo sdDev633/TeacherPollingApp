@@ -11,7 +11,10 @@ app.use(express.json());
 // ----------------------
 // Serve React frontend (Vite)
 // ----------------------
-const frontendPath = path.join(__dirname, "frontend", "dist"); // Vite default output
+// Adjust the path depending on your repo structure.
+// If backend is in `backend/` and frontend in `frontend/`:
+// During Render deployment, `postinstall` will build frontend.
+const frontendPath = path.join(__dirname, "../frontend/dist");
 app.use(express.static(frontendPath));
 
 // --------- LIVE MEMORY DATA ---------
