@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { socket } from "./socket";
-import "./student.css";
+import "./Student.css";
 
 export default function Student() {
     const [name, setName] = useState("");
