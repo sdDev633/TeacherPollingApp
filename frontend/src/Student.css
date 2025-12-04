@@ -1,0 +1,26 @@
+.option-btn {
+  display: block;
+  margin-bottom: 10px;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  transform: scale(1);
+}
+
+.option-btn:hover {
+  transform: scale(1.02);
+}
+
+.option-btn.selected {
+  background-color: #22c55e;
+  color: white;
+  transform: scale(1.05);
+  animation: pop 0.25s ease;
+}
+
+@keyframes pop {
+  0% { transform: scale(0.95); }
+  100% { transform: scale(1.05); }
+}
